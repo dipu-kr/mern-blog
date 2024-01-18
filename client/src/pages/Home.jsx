@@ -1,7 +1,8 @@
 import React from "react";
+import { Button } from "flowbite-react";
 
 const Home = () => {
-  return <div>Home</div>;
+  return <div>home</div>;
 };
 
 export default Home;
