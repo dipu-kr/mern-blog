@@ -1,8 +1,58 @@
-import { Button, Label, TextInput } from "flowbite-react";
-import React from "react";
+import { Button, Label, TextInput, Toast } from "flowbite-react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import axiosInstance from "../constant/baseUrl";
 
 const SignUp = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  // --------------------
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+    if (formData.username.trim() === "") {
+      toast.error("Username is required!");
+    } else if (formData.email.trim() === "") {
+      toast.error("Email is required!");
+    } else if (
+      !formData.email.includes("@") ||
+      !formData.email.includes(".com")
+    ) {
+      toast.error("Please Enter Valid Email!");
+    } else if (formData.password.trim() === "") {
+      toast.error("Password is required!");
+    } else {
+      try {
+        const req = {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        };
+
+        const response = await axiosInstance.post("/signup", req);
+        console.log(response);
+        if (response.data?.status === 201) {
+          toast.success(response.data?.message);
+        }
+        if (response.data?.status === 400) {
+          toast.error(response.data?.message);
+        }
+      } catch (error) {
+        console.log("error", error);
+        toast.error(error.message);
+      }
+    }
+  };
   return (
     <div className="min-h-screen mt-20">
       <div className="flex gap-5 p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center">
@@ -21,18 +71,33 @@ const SignUp = () => {
         </div>
         {/* right */}
         <div className="flex-1">
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Username" />
-              <TextInput type="text" placeholder="Username" id="username" />
+              <TextInput
+                type="text"
+                placeholder="Username"
+                name="username"
+                onChange={handleChange}
+              />
             </div>
             <div>
               <Label value="Email" />
-              <TextInput type="email" placeholder="Email" id="email" />
+              <TextInput
+                type="email"
+                placeholder="Email"
+                name="email"
+                onChange={handleChange}
+              />
             </div>
             <div>
               <Label value="Password" />
-              <TextInput type="password" placeholder="Password" id="password" />
+              <TextInput
+                type="password"
+                placeholder="Password"
+                name="password"
+                onChange={handleChange}
+              />
             </div>
             <Button gradientDuoTone="purpleToPink" type="submit">
               Sign Up
@@ -46,6 +111,7 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };
