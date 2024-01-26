@@ -3,6 +3,7 @@ import bcryptjs from "bcryptjs";
 
 export const signup = async (req, res) => {
   const { username, email, password } = req.body;
+
   if (
     !username ||
     !email ||
@@ -11,15 +12,16 @@ export const signup = async (req, res) => {
     email === "" ||
     password === ""
   ) {
-    return res.status(400).json({ message: "All field are required" });
+    return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
     const userExist = await User.findOne({ email: email });
+
     if (userExist) {
       return res
         .status(400)
-        .json({ message: "User already exist!", status: 400 });
+        .json({ message: "User already exists!", status: 400 });
     } else {
       const hashedPassword = bcryptjs.hashSync(password, 10);
       const newUser = new User({
@@ -28,11 +30,11 @@ export const signup = async (req, res) => {
         password: hashedPassword,
       });
       await newUser.save();
-      res
+      return res
         .status(201)
-        .json({ message: "Registraion Successfull!", status: 201 });
+        .json({ message: "Registration successful!", status: 201 });
     }
   } catch (error) {
-    res.status(500).json({ message: "Server Error!", statsu: 500 });
+    return res.status(500).json({ message: "Server Error!", status: 500 });
   }
 };

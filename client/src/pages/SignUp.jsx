@@ -1,25 +1,28 @@
 import { Button, Label, TextInput, Toast } from "flowbite-react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "../constant/baseUrl";
+import { FaSpinner } from "react-icons/fa";
 
 const SignUp = () => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
 
+  const navigate = useNavigate();
   // --------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value.trim() });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    // console.log(formData);
     if (formData.username.trim() === "") {
       toast.error("Username is required!");
     } else if (formData.email.trim() === "") {
@@ -32,6 +35,7 @@ const SignUp = () => {
     } else if (formData.password.trim() === "") {
       toast.error("Password is required!");
     } else {
+      setLoading(true);
       try {
         const req = {
           username: formData.username,
@@ -40,16 +44,20 @@ const SignUp = () => {
         };
 
         const response = await axiosInstance.post("/signup", req);
-        console.log(response);
+
         if (response.data?.status === 201) {
+          setLoading(false);
           toast.success(response.data?.message);
-        }
-        if (response.data?.status === 400) {
-          toast.error(response.data?.message);
+          navigate("/sign-in");
         }
       } catch (error) {
-        console.log("error", error);
-        toast.error(error.message);
+        if (error.response.data?.status === 400) {
+          setLoading(false);
+          toast.error(error.response.data?.message);
+        } else {
+          setLoading(false);
+          toast.error(error.response.data?.message);
+        }
       }
     }
   };
@@ -99,8 +107,16 @@ const SignUp = () => {
                 onChange={handleChange}
               />
             </div>
-            <Button gradientDuoTone="purpleToPink" type="submit">
-              Sign Up
+            <Button
+              gradientDuoTone="purpleToPink"
+              type="submit"
+              className="h-[40px]"
+            >
+              {loading === true ? (
+                <FaSpinner size={18} className="animate-spin mr-2" />
+              ) : (
+                "Sign Up"
+              )}
             </Button>
           </form>
           <div className="flex gap-2 text-sm mt-3">
