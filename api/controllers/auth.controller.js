@@ -69,7 +69,7 @@ export const signin = async (req, res, next) => {
     res
       .status(200)
       .cookie("access_token", token, { httpOnly: true })
-      .json(rest);
+      .json({ data: rest, status: 200, message: "Successfully Sign In!" });
   } catch (error) {
     return res.status(500).json({ message: "Server Error!", status: 500 });
   }
