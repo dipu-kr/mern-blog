@@ -4,14 +4,22 @@ import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "../constant/baseUrl";
 import { FaSpinner } from "react-icons/fa";
 import { Button, Label, TextInput } from "flowbite-react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 
 const SignIn = () => {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   // --------------------
   const handleChange = (e) => {
@@ -22,17 +30,21 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.email.trim() === "") {
-      toast.error("Email is required!");
+      const errMsg = dispatch(signInFailure("Email is required!"));
+      toast.error(errMsg?.payload);
     } else if (
       !formData.email.includes("@") ||
       !formData.email.includes(".com")
     ) {
-      toast.error("Please Enter Valid Email!");
+      const errMsg = dispatch(signInFailure("Please Enter Valid Email!"));
+      toast.error(errMsg?.payload);
     } else if (formData.password.trim() === "") {
-      toast.error("Password is required!");
+      const errMsg = dispatch(signInFailure("Password is required!"));
+      toast.error(errMsg?.payload);
     } else {
-      setLoading(true);
       try {
+        dispatch(signInStart());
+
         const req = {
           email: formData.email,
           password: formData.password,
@@ -41,17 +53,16 @@ const SignIn = () => {
         const response = await axiosInstance.post("/signin", req);
 
         if (response.data?.status === 200) {
-          setLoading(false);
-          toast.success(response.data?.message);
+          dispatch(signInSuccess(response?.data?.data));
           navigate("/");
         }
       } catch (error) {
         if (error.response.data?.status === 400) {
-          setLoading(false);
-          toast.error(error.response.data?.message);
+          const errMsg = dispatch(signInFailure(error.response.data?.message));
+          toast.error(errMsg.payload);
         } else {
-          setLoading(false);
-          toast.error(error.response.data?.message);
+          const errMsg = dispatch(signInFailure(error.response.data?.message));
+          toast.error(errMsg);
         }
       }
     }
@@ -99,7 +110,7 @@ const SignIn = () => {
               type="submit"
               className="h-[40px]"
             >
-              {loading === true ? (
+              {loading ? (
                 <FaSpinner size={18} className="animate-spin mr-2" />
               ) : (
                 "Sign In"
