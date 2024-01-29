@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Oauth from "../components/Oauth";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "../constant/baseUrl";
@@ -116,6 +117,7 @@ const SignIn = () => {
                 "Sign In"
               )}
             </Button>
+            <Oauth />
           </form>
           <div className="flex gap-2 text-sm mt-3">
             <span>Don't have an account?</span>
