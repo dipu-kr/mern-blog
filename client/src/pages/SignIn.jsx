@@ -32,7 +32,7 @@ const SignIn = () => {
     e.preventDefault();
     if (formData.email.trim() === "") {
       const errMsg = dispatch(signInFailure("Email is required!"));
-      toast.error(errMsg?.payload);
+      toast.error(errorMessage);
     } else if (
       !formData.email.includes("@") ||
       !formData.email.includes(".com")
@@ -45,7 +45,6 @@ const SignIn = () => {
     } else {
       try {
         dispatch(signInStart());
-
         const req = {
           email: formData.email,
           password: formData.password,

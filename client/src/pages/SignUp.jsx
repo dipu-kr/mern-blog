@@ -23,7 +23,6 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(formData);
     if (formData.username.trim() === "") {
       toast.error("Username is required!");
     } else if (formData.email.trim() === "") {

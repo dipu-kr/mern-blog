@@ -74,3 +74,41 @@ export const signin = async (req, res, next) => {
     return res.status(500).json({ message: "Server Error!", status: 500 });
   }
 };
+
+export const google = async (req, res, next) => {
+  const { name, email, googlePhotoUrl } = req.body;
+
+  try {
+    const validUser = await User.findOne({ email: email });
+    if (validUser) {
+      const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY);
+      const { password, ...rest } = validUser._doc;
+      res
+        .status(200)
+        .cookie("access_token", token, { httpOnly: true })
+        .json({ data: rest, status: 200 });
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      const newUser = new User({
+        username:
+          name.toLowerCase().split(" ").join("") +
+          Math.random().toString(9).slice(-4),
+        email,
+        password: hashedPassword,
+        profilePicture: googlePhotoUrl,
+      });
+      await newUser.save();
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY);
+      const { password: pass, ...rest } = newUser._doc;
+      res
+        .status(200)
+        .cookie("access_token", token, { httpOnly: true })
+        .json({ data: rest, status: 200 });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Server Error!", status: 500 });
+  }
+};
