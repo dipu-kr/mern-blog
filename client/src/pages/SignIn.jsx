@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Oauth from "../components/Oauth";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,7 +14,11 @@ import {
 
 const SignIn = () => {
   // const [loading, setLoading] = useState(false);
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const {
+    currentUser,
+    loading,
+    error: errorMessage,
+  } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -67,6 +71,13 @@ const SignIn = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      return navigate("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   return (
     <div className="min-h-screen mt-20">

@@ -6,6 +6,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Projects from "./Projects";
 import Dashboard from "./pages/Dashboard";
+import UserProfile from "./pages/UserProfile";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
@@ -17,12 +18,25 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/projects" element={<Projects />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-        <Route path="/projects" element={<Projects />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <UserProfile />
+            </PrivateRoute>
+          }
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -12,6 +12,7 @@ const Oauth = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auth = getAuth(app);
+
   const handleGoogleClick = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
@@ -24,7 +25,7 @@ const Oauth = () => {
       };
       const response = await axiosInstance.post("/google", req);
       if (response.data?.status === 200) {
-        dispatch(signInSuccess(response.data?.data));
+        dispatch(signInSuccess(response?.data?.data));
         navigate("/");
       }
     } catch (error) {

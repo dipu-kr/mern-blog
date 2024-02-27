@@ -3,14 +3,45 @@ import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
+import axiosInstance from "../constant/baseUrl";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 import { toggleTheme } from "../redux/theme/themeSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 const Header = () => {
   const dispatch = useDispatch();
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
+
+  // logout function
+  const userLogout = async () => {
+    const token = currentUser?.token || currentUser?.accessToken;
+    if (token) {
+      dispatch(signInStart());
+      let conFig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      try {
+        const response = await axiosInstance.post("/logout", conFig);
+        if (response.data?.status === 200) {
+          toast.success(response.data?.message);
+          dispatch(signInSuccess(response.data?.data));
+        }
+      } catch (error) {
+        dispatch(signInFailure(error.response.data?.message));
+      }
+    }
+  };
+
   return (
     <Navbar className="border-b-2">
       <Link
@@ -47,7 +78,12 @@ const Header = () => {
             arrowIcon={false}
             inline
             label={
-              <Avatar alt="user" img={currentUser.profilePicture} rounded />
+              <Avatar
+                alt="user"
+                img={currentUser?.profilePicture}
+                rounded
+                className="bg-gray-200 dark:bg-gray-600 rounded-full p-[2px]"
+              />
             }
           >
             <Dropdown.Header>
@@ -56,11 +92,11 @@ const Header = () => {
                 {currentUser.email}
               </span>
             </Dropdown.Header>
-            <Link to={"/dashboard?tab=profile"}>
+            <Link to={"/profile"}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={userLogout}>Sign out</Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/sign-in">
@@ -82,7 +118,13 @@ const Header = () => {
         <Navbar.Link active={path === "/projects"} as={"div"}>
           <Link to="/projects">Projects</Link>
         </Navbar.Link>
+        {currentUser && (
+          <Navbar.Link active={path === "/dashboard"} as={"div"}>
+            <Link to="/dashboard">Dashboard</Link>
+          </Navbar.Link>
+        )}
       </Navbar.Collapse>
+      <Toaster />
     </Navbar>
   );
 };

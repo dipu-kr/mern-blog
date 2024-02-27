@@ -1,10 +1,11 @@
 import { Button, Label, TextInput, Toast } from "flowbite-react";
 import Oauth from "../components/Oauth";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "../constant/baseUrl";
 import { FaSpinner } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,8 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+
+  const { currentUser } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
   // --------------------
@@ -61,6 +64,14 @@ const SignUp = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      return navigate("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex gap-5 p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center">

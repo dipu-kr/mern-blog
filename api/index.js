@@ -1,28 +1,17 @@
-import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
-import cors from "cors";
-import userRoutes from "./routes/user.route.js";
-import authRoutes from "./routes/auth.route.js";
+import connectDB from "./db/db.js";
+import { app } from "./app.js";
 
-dotenv.config();
-
-mongoose
-  .connect(process.env.MONGOURI)
-  .then(() => {
-    console.log("Mongodb connected!");
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-app.use("/api", userRoutes);
-app.use("/api", authRoutes);
-
-app.listen(process.env.PORT, () => {
-  console.log(`server is running on port: ${process.env.PORT}`);
+dotenv.config({
+  path: "./env",
 });
+
+connectDB()
+  .then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is running at port ${process.env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("MongoDB connection failed!!! ", err);
+  });
