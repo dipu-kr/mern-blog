@@ -36,7 +36,6 @@ export const signup = async (req, res) => {
         .status(400)
         .json({ message: "User already exists!", status: 400 });
     } else {
-      // const hashedPassword = bcryptjs.hashSync(password, 10);
       const newUser = new User({
         username,
         email,
@@ -94,8 +93,8 @@ export const google = async (req, res) => {
     // check user exist or not
     if (validUser) {
       const token = await generateAccessAndRefreshTokens(validUser?._id);
-      const { password, ...rest } = validUser._doc;
-      console.log("google", rest);
+      const userExist = await User.findById(validUser?._id);
+      const { password, ...rest } = userExist._doc;
       res
         .status(200)
         .cookie("access_token", token, { httpOnly: true })
@@ -116,13 +115,13 @@ export const google = async (req, res) => {
       const user = await newUser.save();
       if (user) {
         const token = await generateAccessAndRefreshTokens(user?._id);
-        const { password, ...rest } = user._doc;
+        const userExist = await User.findById(user?._id);
+        const { password, ...rest } = userExist?._doc;
 
-        console.log("google sign up", rest);
         res
           .status(200)
           .cookie("access_token", token, { httpOnly: true })
-          .json({ data: rest, token: token, status: 200 });
+          .json({ data: rest, status: 200 });
       }
     }
   } catch (err) {

@@ -17,6 +17,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
   const { theme } = useSelector((state) => state.theme);
 
   // logout function
@@ -37,8 +38,12 @@ const Header = () => {
           dispatch(signInSuccess(response.data?.data));
         }
       } catch (error) {
+        console.log(error);
         dispatch(signInFailure(error.response.data?.message));
+        toast.error(error.response.data?.message);
       }
+    } else {
+      toast.error("Token not found");
     }
   };
 
@@ -114,9 +119,6 @@ const Header = () => {
         </Navbar.Link>
         <Navbar.Link active={path === "/about"} as={"div"}>
           <Link to="/about">About</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/projects"} as={"div"}>
-          <Link to="/projects">Projects</Link>
         </Navbar.Link>
         {currentUser && (
           <Navbar.Link active={path === "/dashboard"} as={"div"}>
