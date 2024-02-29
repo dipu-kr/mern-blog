@@ -13,10 +13,10 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  photo: {
-    type: String,
-    required: true,
-  },
+  // photo: {
+  //   type: String,
+  //   required: true,
+  // },
 });
 
 const Post = mongoose.model("Post", postSchema);
