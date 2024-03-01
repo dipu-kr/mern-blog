@@ -17,7 +17,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
-  console.log(currentUser);
+  // console.log(currentUser);
   const { theme } = useSelector((state) => state.theme);
 
   // logout function

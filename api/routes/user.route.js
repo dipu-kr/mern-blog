@@ -1,11 +1,17 @@
 import express from "express";
-import { test, updateUser } from "../controllers/user.controller.js";
-import { post } from "../controllers/post.controller.js";
+import { blogpost } from "../controllers/post.controller.js";
+import { upload } from "../middleware/multer.middleware.js";
 
 const router = express.Router();
 
-router.get("/test", test);
-router.put("/update:userId", updateUser);
-router.post("/blog-post", post);
+router
+  .route("/blog-post")
+  .post(upload.fields([{ name: "photo", maxCount: 1 }]), blogpost);
+
+// router.post(
+//   "/blog-post",
+//   upload.fields([{ name: "photo", maxCount: 1 }]),
+//   blogpost
+// );
 
 export default router;

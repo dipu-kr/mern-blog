@@ -9,3 +9,12 @@ const axiosInstance = axios.create({
 });
 
 export default axiosInstance;
+
+export const axiosInstance2 = axios.create({
+  baseURL: "http://localhost:5000/api/v1/users",
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
+
+export const imgBaseURL = "http://localhost:5000/api/v1/users";
